@@ -26,7 +26,7 @@ export default {
 			const url = new URL(request.url);
 			
 			if (url.pathname === "/favicon.ico") {
-		      const bytes = Uint8Array.from(atob(FAVICON_B64), c => c.charCodeAt(0));
+		      const bytes = Uint8Array.from(atob(FAVICON), c => c.charCodeAt(0));
 		      return new Response(bytes, {
 		        headers: {
 		          "Content-Type": "image/x-icon",
