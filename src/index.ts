@@ -1,6 +1,8 @@
 // MODIFIED FROM https://developers.cloudflare.com/workers/examples/cors-header-proxy/
 // NO OTHER COMMENTS ARE MY OWN
 
+const FAVICON = "iVBORw0KGgoAAAANSUhEUgAAAeAAAAHgBAMAAACP+qOmAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAuIwAALiMBeKU/dgAAABVQTFRF////5+fnzc3NAAAA8/PzR+L/2traO7U3vgAAAkxJREFUeJzt3VsNAkEQRFEsYAELWMACFvAvAQdF0p3KDsm5v5t5nPnv7O226B7Lax+xzc6btcDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMC556JXrHcuMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw8AacP+et37HNS2/O/fHQwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwBHca/Mrx8suvQkYGBgYGPiggIGBgYGBDwoYGBgYGPiggIGBgYGBDwoYGBgYGPiggIGBgYGBDwoYGBgYGPiggIGBgYGBDwoY+BJw7+A8MJnLjwUMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAzcA28u/Yn1wHktMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwcA+8eY7eoGYeEAUGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgbugfOlN6RcHrZckXLAwMDAk4CBSwEDAwNPAgYuBQwMDDwJGLgUMDAw8CRg4FLAwMDAk4CBSwEDAwNPAgYuBQwMDDwJGLgUMDAw8CRg4FLAwP8G/gIqlwmoMoA/7AAAAABJRU5ErkJggg=="
+
 export default {
 	async fetch(request): Promise<Response> {
 		const corsHeaders = {
@@ -22,7 +24,17 @@ export default {
 
 		async function handleRequest(request) {
 			const url = new URL(request.url);
-
+			
+			if (url.pathname === "/favicon.ico") {
+		      const bytes = Uint8Array.from(atob(FAVICON_B64), c => c.charCodeAt(0));
+		      return new Response(bytes, {
+		        headers: {
+		          "Content-Type": "image/x-icon",
+		          "Cache-Control": "public, max-age=604800" // Cache for 1 week
+		        },
+		      });
+		    }
+			
 			// Rewrite request to point to API URL. This also makes the request mutable
 			// so you can add the correct Origin header to make the API server think
 			// that this request is not cross-site.
