@@ -22,57 +22,6 @@ export default {
 			});
 		}
 
-		const DEMO_PAGE = `
-      <!DOCTYPE html>
-      <html>
-      <body>
-        <h1>API GET without CORS Proxy</h1>
-        <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#Checking_that_the_fetch_was_successful">Shows TypeError: Failed to fetch since CORS is misconfigured</a>
-        <p id="noproxy-status"/>
-        <code id="noproxy">Waiting</code>
-        <h1>API GET with CORS Proxy</h1>
-        <p id="proxy-status"/>
-        <code id="proxy">Waiting</code>
-        <h1>API POST with CORS Proxy + Preflight</h1>
-        <p id="proxypreflight-status"/>
-        <code id="proxypreflight">Waiting</code>
-        <script>
-        let reqs = {};
-        reqs.noproxy = () => {
-          return fetch("${API_URL}").then(r => r.json())
-        }
-        reqs.proxy = async () => {
-          let href = "${PROXY_ENDPOINT}?apiurl=${API_URL}"
-          return fetch(window.location.origin + href).then(r => r.json())
-        }
-        reqs.proxypreflight = async () => {
-          let href = "${PROXY_ENDPOINT}?apiurl=${API_URL}"
-          let response = await fetch(window.location.origin + href, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              msg: "Hello world!"
-            })
-          })
-          return response.json()
-        }
-        (async () => {
-        for (const [reqName, req] of Object.entries(reqs)) {
-          try {
-            let data = await req()
-            document.getElementById(reqName).textContent = JSON.stringify(data)
-          } catch (e) {
-            document.getElementById(reqName).textContent = e
-          }
-        }
-      })()
-        </script>
-      </body>
-      </html>
-    `;
-
 		async function handleRequest(request) {
 			const url = new URL(request.url);
 			let apiUrl = url.searchParams.get("apiurl");
@@ -92,7 +41,7 @@ export default {
 			response = new Response(response.body, response);
 			// Set CORS headers
 
-			response.headers.set("Access-Control-Allow-Origin", url.origin);
+			response.headers.set("Access-Control-Allow-Origin", "*");
 
 			// Append to/Add Vary header so browser will cache response correctly
 			response.headers.append("Vary", "Origin");
@@ -126,6 +75,7 @@ export default {
 		}
 
 		const url = new URL(request.url);
+		const DEMO_PAGE = `<!DOCTYPE html><html><body>${url.origin}</body></html>`;
 		if (url.pathname.startsWith(PROXY_ENDPOINT)) {
 			if (request.method === "OPTIONS") {
 				// Handle CORS preflight requests
